@@ -1,6 +1,10 @@
-body {
+*, *::before, *::after {
   font-family: "Playwrite US Modern", cursive;
   font-optical-sizing: auto;
-  font-weight: <weight>;
+  font-weight: 300;
   font-style: normal;
+}
+
+body {
+  
 }
