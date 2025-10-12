@@ -27,8 +27,8 @@ The result? Kangaroo blacked out. He woke up in transit to a Polish zoo. Somehow
 Clone the repo:
 
 ```bash
-git clone https://github.com/your-username/random-life-advice.git
-cd random-life-advice
+git clone https://github.com/k4ng00r/projects.git
+cd projects/P0_Random-Life-Advice-Generator
 ```
 
 Open `index.html` in your browser or use Live Server in VS Code.
