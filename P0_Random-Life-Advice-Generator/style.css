@@ -6,5 +6,45 @@
 }
 
 body {
-  
+  background-color: #f0f0ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+  background: #fff;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+  padding-bottom: 2rem;
+}
+
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  width: 180px;
+  padding: 0 0.5rem 1rem;
+  font-size: 1.25rem;
+  cursor: pointer;
+  margin: 0 auto;
+}
+
+#advice-display {
+  margin-top: 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+#advice-display.show {
+  opacity: 1;
 }
