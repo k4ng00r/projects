@@ -14,7 +14,7 @@ I’m Kangaroo. I’m one of ‘em. I’m a Genius. A Junkie and an Alcoholic. I
 
 ## Project List
 
-SCHEMAT LISTY:  
+LIST SCHEMA:  
 1. Link to deploy  
 2. Optional Codepen link, if it exists  
 3. Link to Repo  
