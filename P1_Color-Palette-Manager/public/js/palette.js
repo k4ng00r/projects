@@ -1,7 +1,15 @@
-// CREATE palette with color picker
-let colors = [];
+// CREATE + UPDATE palettes in localStorage
+const STORAGE_KEY = "palettes";
 
-// DOM elements
+const loadPalettes = () =>
+    JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+const savePalettes = (data) =>
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+let colors = [];
+let editingPaletteId;
+
+// DOM
 const colorNameInput = document.querySelector("#colorName");
 const colorPicker = document.querySelector("#colorPicker");
 const addColorBtn = document.querySelector("#addColor");
@@ -9,12 +17,30 @@ const colorList = document.querySelector("#colorList");
 const form = document.querySelector("#paletteForm");
 const previewSection = document.querySelector("#previewSection");
 const previewColors = document.querySelector("#previewColors");
+const paletteNameInput = document.querySelector("#paletteName");
 
-// Add color to currect palette
+// --- INIT: sprawdź, czy to edycja (parametr ?id=)
+document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    if (id) loadPaletteForEdit(id);
+});
+
+const loadPaletteForEdit = (id) => {
+    const palettes = loadPalettes();
+    const palette = palettes.find((p) => p.id == id);
+    if (!palette) return;
+
+    editingPaletteId = id;
+    paletteNameInput.value = palette.name;
+    colors = palette.colors;
+    renderColors();
+};
+
+// --- dodawanie koloru
 addColorBtn.addEventListener("click", () => {
     const name = colorNameInput.value.trim() || "Unnamed";
     const hex = colorPicker.value;
-
     const color = { id: Date.now(), name, hex };
     colors.push(color);
     renderColors();
@@ -67,23 +93,38 @@ form.addEventListener("submit", (e) => {
     e.preventDefault();
 
     const name = document.querySelector("#paletteName").value.trim();
+
     if (!name || colors.length === 0) {
         alert("Please provide a palette name and at least one color.");
         return;
     }
 
-    const newPalette = {
-        id: Date.now(),
-        name,
-        date: new Date().toISOString().split("T")[0],
-        colors,
-    };
+    const palettes = loadPalettes();
 
-    console.log('New palette created:', newPalette);
+    if (editingPaletteId) {
+        // UPDATE
+        const index = palettes.findIndex((p) => p.id == editingPaletteId);
+        if (index !== -1) {
+            palettes[index] = {
+                ...palettes[index],
+                name,
+                colors,
+                date: new Date().toISOString().split("T")[0],
+            };
+        }
+        alert("Palette updated!");
+    } else {
+        // CREATE
+        const newPalette = {
+            id: Date.now(),
+            name,
+            date: new Date().toISOString().split("T")[0],
+            colors,
+        };
+        palettes.push(newPalette);
+        alert("Palette saved!");
+    }
 
-    // TODO: save to localStorage (in next step)
-    alert('Palette created successfully (mock). Check console for details.');
-    form.reset();
-    colors = [];
-    renderColors();
+    savePalettes(palettes);
+    window.location.href = "index.html";
 });

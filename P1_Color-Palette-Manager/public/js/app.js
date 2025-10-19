@@ -1,39 +1,39 @@
-// przykładowe dane (normalnie potem wczytamy z localStorage)
-const palettes = [
-    {
-        id: "p1",
-        name: "Australian Coast",
-        date: "2025-10-18",
-        colors: ["#00665E", "#D84B20", "#F2E6C9", "#274C77"],
-    },
-    {
-        id: "p2",
-        name: "Outback Sunset",
-        date: "2025-10-19",
-        colors: ["#A0522D", "#FF7F32", "#2A9DF4", "#5A7359"],
-    },
-    {
-        id: "p3",
-        name: "Eucalypt Dreams",
-        date: "2025-10-20",
-        colors: ["#1B4332", "#40916C", "#74C69D", "#B7E4C7"],
-    },
-];
+// Klucz, pod którym trzymamy dane w locaStorage
+const STORAGE_KEY = "palettes";
 
-// renderowanie kart palet
+// Odczytaj palety z localStorage
+const loadPalettes = () =>
+    JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+
+// Zapisz palety do localStorage
+const savePalettes = (data) =>
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+// Usuń paletę po id
+const deletePalette = (id) => {
+    const palettes = loadPalettes().filter((p) => p.id != id);
+    savePalettes(palettes);
+    renderPalettes(loadPalettes());
+};
+
+// Renderowanie kart
 const renderPalettes = (list) => {
     const container = document.querySelector("#paletteList");
-    container.innerHTML = ""; // wyczyść
+    container.innerHTML = "";
+
+    if (list.length === 0) {
+        container.innerHTML = `<p class="text-muted">No palettes yet. <a href="palette.html">Create one →</a></p>`;
+        return;
+    }
 
     list.forEach((palette) => {
         const col = document.createElement("div");
         col.className = "col-12 col-md-6 col-lg-4";
 
-        // budujemy html jednej karty
         const colorsHTML = palette.colors
             .map(
                 (c) =>
-                    `<div class="flex-fill" style="background:${c};height:40px;" title="${c}"></div>`
+                    `<div class="flex-fill" style="background:${c.hex};height:40px; title="${c.hex}"></div>`
             )
             .join("");
 
@@ -43,16 +43,28 @@ const renderPalettes = (list) => {
         <div class="card-body">
           <h5 class="card-title">${palette.name}</h5>
           <p class="card-text text-muted small mb-2">${palette.date}</p>
-          <a href="palette.html?id=${palette.id}" class="btn btn-outline-light btn-sm">Open</a>
+          <div class="d-flex gap-2">
+            <a href="palette.html?id=${palette.id}" class="btn btn-outline-light btn-sm flex-grow-1">Edit</a>
+            <button class="btn btn-outline-danger btn-sm flex-grow-1" data-id="${palette.id}">Delete</button>
+          </div>
         </div>
       </div>
     `;
 
         container.appendChild(col);
     });
+
+    // Obsługa przycisków "Delete"
+    document.querySelectorAll("button[data-id]").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            const id = e.target.dataset.id;
+            if (confirm("Delete this palette?")) deletePalette(id);
+        });
+    });
 };
 
-// inicjalizacja
+// Inicjalizacja
 document.addEventListener("DOMContentLoaded", () => {
+    const palettes = loadPalettes();
     renderPalettes(palettes);
 });
