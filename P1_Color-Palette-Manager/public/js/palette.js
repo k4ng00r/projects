@@ -128,3 +128,65 @@ form.addEventListener("submit", (e) => {
     savePalettes(palettes);
     window.location.href = "index.html";
 });
+
+// --- READ-ONLY view and copy on click ---
+document.addEventListener("DOMContentLoaded", () => {
+    const params = new URLSearchParams(window.location.search);
+    const viewId = params.get("view");
+    if (viewId) showReadOnly(viewId);
+});
+
+const showReadOnly = (id) => {
+    // ukryj formularz
+    document.querySelector("#paletteForm").classList.add("d-none");
+
+    const ro = document.querySelector("#readonlyView");
+    ro.classList.remove("d-none");
+
+    const data = loadPalettes();
+    const palette = data.find((p) => p.id == id);
+    if (!palette) {
+        ro.innerHTML = `<p class="text-danger">Palette not found.</p>`;
+        return;
+    }
+
+    document.querySelector("#roName").textContent = palette.name;
+    document.querySelector("#roDate").textContent = palette.data;
+
+    const box = document.querySelector("#roColors");
+    box.innerHTML = "";
+
+    palette.colors.forEach(c => {
+      const rgb = hexToRgb(c.hex);
+      const el = document.createElement('div');
+      el.className = 'p-3 rounded text-center text-dark';
+      el.style.background = c.hex;
+      el.style.minWidth = '110px';
+      el.style.cursor = 'pointer';
+      el.innerHTML = `
+        <div><strong>${c.name}</strong></div>
+        <small>${c.hex}</small><br>
+        <small>${rgb}</small>
+      `;
+      el.addEventListener('click', () => {
+        navigator.clipboard.writeText(c.hex);
+        showCopied(el);
+      });
+      box.appendChild(el);
+    });
+};
+
+const hexToRgb = hex => {
+  const res = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!res) return '';
+  return `rgb(${parseInt(res[1], 16)}, ${parseInt(res[2], 16)}, ${parseInt(res[3], 16)})`;
+};
+
+const showCopied = el => {
+  el.style.opacity = '0.7';
+  el.style.outline = '2px solid white';
+  setTimeout(() => {
+    el.style.opacity = '1';
+    el.style.outline = 'none';
+  }, 400);
+}
