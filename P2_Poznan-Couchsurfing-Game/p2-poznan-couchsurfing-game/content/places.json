@@ -1,0 +1,11 @@
+[
+    {
+        "id": "palmiarnia",
+        "name": { "en": "Palm House" },
+        "coords": { "lat": 52.4006, "lon": 16.9012 },
+        "hours": "Tue–Sun 9:00–17:00",
+        "ticket": "16–24 PLN",
+        "tags": ["indoor", "warm", "instagram"],
+        "thumbnail": "https://picsum.photos/seed/palmiarnia/400/240"
+    }
+]

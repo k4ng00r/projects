@@ -1,0 +1,19 @@
+[
+    {
+        "id": "start",
+        "textKey": "node.start",
+        "choices": [
+            {
+                "to": "palmiarnia_scene",
+                "labelKey": "go.palmiarnia",
+                "effects": { "comfort": 1 }
+            }
+        ]
+    },
+    {
+        "id": "palmiarnia_scene",
+        "placeId": "palmiarnia",
+        "textKey": "node.palmiarnia.intro",
+        "choices": []
+    }
+]
