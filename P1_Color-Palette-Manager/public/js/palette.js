@@ -137,10 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const showReadOnly = (id) => {
-    // ukryj formularz
-    document.querySelector("#paletteForm").classList.add("d-none");
-
+    const formEl = document.querySelector("#paletteForm");
     const ro = document.querySelector("#readonlyView");
+
+    // bezpieczeństwo - sprawdź czy elementy istnieją
+    if (!ro || !formEl) {
+        console.error("Brakuje sekcji read-only lub formularza w HTML");
+        return;
+    }
+
+    formEl.classList.add("d-none");
     ro.classList.remove("d-none");
 
     const data = loadPalettes();
@@ -169,11 +175,31 @@ const showReadOnly = (id) => {
         <small>${rgb}</small>
       `;
         el.addEventListener("click", () => {
-            navigator.clipboard.writeText(c.hex);
-            showCopied(el);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard
+                    .writeText(c.hex)
+                    .then(() => showCopied(el))
+                    .catch(() => fallbackCopy(c.hex, el));
+            } else {
+                fallbackCopy(c.hex, el);
+            }
         });
         box.appendChild(el);
     });
+};
+
+const fallbackCopy = (text, el) => {
+    const temp = document.createElement("textarea");
+    temp.value = text;
+    document.body.appendChild(temp);
+    temp.select();
+    try {
+        document.execCommand("copy");
+        showCopied(el);
+    } catch (err) {
+        alert("Could not copy color.");
+    }
+    document.body.removeChild(temp);
 };
 
 const hexToRgb = (hex) => {
@@ -185,11 +211,23 @@ const hexToRgb = (hex) => {
     )})`;
 };
 
-const showCopied = (el) => {
-    el.style.opacity = "0.7";
-    el.style.outline = "2px solid white";
+function showCopied(el) {
+    // zabezpieczenie: jeśli tooltip już istnieje, nie duplikuj
+    if (el.querySelector(".copy-tooltip")) return;
+
+    const tip = document.createElement("div");
+    tip.className =
+        "copy-tooltip position-absolute bg-light text-dark px-2 py-1 rounded small fw-bold";
+    tip.style.top = "50%";
+    tip.style.left = "50%";
+    tip.style.transform = "translate(-50%, -50%)";
+    tip.style.zIndex = "10";
+    tip.textContent = "Copied!";
+
+    el.style.position = "relative";
+    el.appendChild(tip);
+
     setTimeout(() => {
-        el.style.opacity = "1";
-        el.style.outline = "none";
-    }, 400);
-};
+        tip.remove();
+    }, 1000);
+}
