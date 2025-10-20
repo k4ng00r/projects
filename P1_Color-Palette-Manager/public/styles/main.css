@@ -18,3 +18,8 @@ a:hover {
 .card .d-flex > div:hover {
     transform: scale(1.1);
 }
+
+#roColors div:hover {
+    transform: scale(1.05);
+    transition: 0.15s ease-in-out;
+}

@@ -156,37 +156,40 @@ const showReadOnly = (id) => {
     const box = document.querySelector("#roColors");
     box.innerHTML = "";
 
-    palette.colors.forEach(c => {
-      const rgb = hexToRgb(c.hex);
-      const el = document.createElement('div');
-      el.className = 'p-3 rounded text-center text-dark';
-      el.style.background = c.hex;
-      el.style.minWidth = '110px';
-      el.style.cursor = 'pointer';
-      el.innerHTML = `
+    palette.colors.forEach((c) => {
+        const rgb = hexToRgb(c.hex);
+        const el = document.createElement("div");
+        el.className = "p-3 rounded text-center text-dark";
+        el.style.background = c.hex;
+        el.style.minWidth = "110px";
+        el.style.cursor = "pointer";
+        el.innerHTML = `
         <div><strong>${c.name}</strong></div>
         <small>${c.hex}</small><br>
         <small>${rgb}</small>
       `;
-      el.addEventListener('click', () => {
-        navigator.clipboard.writeText(c.hex);
-        showCopied(el);
-      });
-      box.appendChild(el);
+        el.addEventListener("click", () => {
+            navigator.clipboard.writeText(c.hex);
+            showCopied(el);
+        });
+        box.appendChild(el);
     });
 };
 
-const hexToRgb = hex => {
-  const res = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!res) return '';
-  return `rgb(${parseInt(res[1], 16)}, ${parseInt(res[2], 16)}, ${parseInt(res[3], 16)})`;
+const hexToRgb = (hex) => {
+    const res = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!res) return "";
+    return `rgb(${parseInt(res[1], 16)}, ${parseInt(res[2], 16)}, ${parseInt(
+        res[3],
+        16
+    )})`;
 };
 
-const showCopied = el => {
-  el.style.opacity = '0.7';
-  el.style.outline = '2px solid white';
-  setTimeout(() => {
-    el.style.opacity = '1';
-    el.style.outline = 'none';
-  }, 400);
-}
+const showCopied = (el) => {
+    el.style.opacity = "0.7";
+    el.style.outline = "2px solid white";
+    setTimeout(() => {
+        el.style.opacity = "1";
+        el.style.outline = "none";
+    }, 400);
+};

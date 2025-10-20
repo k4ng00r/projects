@@ -44,6 +44,7 @@ const renderPalettes = (list) => {
           <h5 class="card-title">${palette.name}</h5>
           <p class="card-text text-muted small mb-2">${palette.date}</p>
           <div class="d-flex gap-2">
+            <a href="palette.html?view=${palette.id}" class="btn btn-outline-light btn-sm flex-grow-1">View</a>
             <a href="palette.html?id=${palette.id}" class="btn btn-outline-light btn-sm flex-grow-1">Edit</a>
             <button class="btn btn-outline-danger btn-sm flex-grow-1" data-id="${palette.id}">Delete</button>
           </div>
