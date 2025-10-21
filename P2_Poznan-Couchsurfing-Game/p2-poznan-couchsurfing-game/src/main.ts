@@ -1,4 +1,8 @@
 import { confirmWithQuip } from "./ui/modal";
+import { Engine } from "./engine";
+import type { Params } from "./engine";
+
+const app = document.querySelector<HTMLDivElement>("#app")!;
 
 type SurfData = {
     lang: string;
@@ -6,9 +10,7 @@ type SurfData = {
     cold: boolean;
 };
 
-const app = document.querySelector<HTMLDivElement>("#app")!;
-
-// funkcja do renderowania startowego ekranu wyborów
+// EKRAN STARTOWY
 function renderStart() {
     app.innerHTML = `
     <style>
@@ -59,7 +61,7 @@ function renderStart() {
     document.querySelector("#start")?.addEventListener("click", startGame);
 }
 
-// kiedy klikniemy "Let's go!"
+// START GRY
 async function startGame() {
     const lang = (document.querySelector("#lang") as HTMLSelectElement).value;
     const weather = (document.querySelector("#weather") as HTMLSelectElement)
@@ -73,47 +75,67 @@ async function startGame() {
     const ok = await confirmWithQuip(
         "Ready? Poznań can be weird when it rains."
     );
-    if (ok) renderGame();
+    if (ok) renderGame(surfData);
 }
 
-async function renderGame() {
-    const grid = document.createElement("div");
-    grid.className = "grid";
-    document.body.innerHTML = ""; // wyczyść ekran
-    document.body.appendChild(grid);
-
+// GŁÓWNA GRA
+async function renderGame(surfData: SurfData) {
     const nodes = await (await fetch("/content/nodes.json")).json();
+    const i18n = await (await fetch(`/i18n/${surfData.lang}.json`)).json();
     const places = await (await fetch("/content/places.json")).json();
-    const i18n = await (await fetch("/i18n/en.json")).json();
 
-    const palmiarnia = places.find((p: any) => p.id === "palmiarnia");
+    // inicjalne parametry
+    const params: Params = {
+        charisma: 0,
+        openess: 0,
+        adventure: 0,
+        comfort: 0,
+        budget: 100,
+        cold: surfData.cold,
+    };
+    const engine = new Engine(nodes, params);
 
-    grid.innerHTML = `
-      <div class="card" data-to="palmiarnia_scene">
-        <img src="${palmiarnia.thumbnail}" alt="">
-        <h3>${i18n["go.palmiarnia"]}</h3>
-      </div>`;
+    renderNode("start");
 
-    grid.addEventListener("click", async (e) => {
-        const card = (e.target as HTMLElement).closest(
-            ".card"
-        ) as HTMLElement | null;
-        if (!card) return;
-        const ok = await confirmWithQuip(
-            "Warm jungle, seaty selfies, possible dehydration"
+    async function renderNode(id: string) {
+      const node = engine.getNode(id);
+      app.innerHTML = '<div class="grid" id="grid"></div>';
+      const grid = document.querySelector('#grid');
+      if (!grid) return;
+      grid.className = 'grid';
+      grid?.setAttribute(
+        'style',
+        'display:grid;gap:12px;padding:16px;grid-template-columns:repeat(2,1fr);background:#0e0f12;color:#eee;'
+      );
+
+      if (node.textKey) {
+        const text = i18n[node.textKey] || node.textKey;
+        grid?.insertAdjacentHTML('beforebegin', `<h3 style="padding: 16px;">${text}</h3>`);
+      }
+
+      for (const choice of node.choices || []) {
+        const label = i18n[choice.labelKey] || choice.labelKey;
+        grid?.insertAdjacentHTML(
+          'beforeend',
+          `<div class="card" data-to="${choice.to}" style="background:#1a1c22;border:1px solid #2a2d36;border-radius:12px;overflow:hidden;cursor:pointer;padding:12px;">
+            <h3>${label}</h3>
+          </div>`
         );
-        if (!ok) return;
-        renderPalmiarnia(grid, palmiarnia, i18n);
-    });
+      }
+
+      grid?.querySelectorAll('.card').forEach((card) => {
+        card.addEventListener('click', async () => {
+          const to = (card as HTMLElement).dataset.to!;
+          const ok = await confirmWithQuip('Are you sure?');
+          if (!ok) return;
+          const choice = node.choices?.find((c) => c.to === to);
+          if (choice) engine.apply(choice);
+          const paramsNow = engine.getParams();
+          console.log('🧠 Player stats:', paramsNow);
+          renderNode(to);
+        });
+      });
+    }
 }
 
-function renderPalmiarnia(grid: HTMLElement, palmiarnia: any, i18n: any) {
-  grid.innerHTML = `
-    <div class="card">
-      <img src="${palmiarnia.thumbnail}" alt="">
-      <h3>${i18n['node.palmiarnia.intro']}</h3>
-    </div>`;
-}
-
-// odpal ekran startowy
 renderStart();
