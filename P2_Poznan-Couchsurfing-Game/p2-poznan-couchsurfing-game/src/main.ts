@@ -1,6 +1,7 @@
 import { confirmWithQuip } from "./ui/modal";
 import { Engine } from "./engine";
 import type { Params } from "./engine";
+import { renderPalmiarnia } from './scenes/palmiarnia';
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
@@ -132,6 +133,11 @@ async function renderGame(surfData: SurfData) {
           if (choice) engine.apply(choice);
           const paramsNow = engine.getParams();
           console.log('🧠 Player stats:', paramsNow);
+          if (to === 'palmiarnia_scene') {
+            const palmiarnia = places.find((p: any) => p.id === 'palmiarnia');
+            await renderPalmiarnia(app, palmiarnia, i18n);
+            return;
+          }
           renderNode(to);
         });
       });
