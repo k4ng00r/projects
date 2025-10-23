@@ -1,13 +1,44 @@
 /** @jsxImportSource preact */
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import { confirmWithQuip } from "./ui/modal";
-import { getUserLocation, inRadius, distanceMeters } from "./geo";
+import { Palmiarnia } from "./scenes/Palmiarnia";
 
 export function App() {
+    // wczytaj zapisane preferencje (bez krzyczenia przy złamanym JSON)
+    const saved = (() => {
+        try {
+            return JSON.parse(localStorage.getItem("surfer") || "null") as {
+                lang: string;
+                weather: string;
+                cold: boolean;
+            } | null;
+        } catch {
+            return null;
+        }
+    })();
+
+    // 1) stan aplikacji
     const [stage, setStage] = useState<"menu" | "palmiarnia">("menu");
-    const [lang, setLang] = useState("en");
-    const [weather, setWeather] = useState("sunny");
-    const [cold, setCold] = useState(false);
+
+    // 2) stan Surfera z fallbackiem do zapisanych ustawień
+    const [lang, setLang] = useState(saved?.lang ?? "en");
+    const [weather, setWeather] = useState(saved?.weather ?? "sunny");
+    const [cold, setCold] = useState<boolean>(saved?.cold ?? false);
+
+    // 3) trzymamy wybory w localStorage na bieżąco (wygodne przy odświeżeniu strony)
+    useEffect(() => {
+        localStorage.setItem("surfer", JSON.stringify({ lang, weather, cold }));
+    }, [lang, weather, cold]);
+
+    // 4) handler startu gry — TERAZ używany przez przycisk
+    const startGame = async () => {
+        // tu już i tak mamy zapisane preferencje przez useEffect, ale nie zaszkodzi nadpisać
+        localStorage.setItem("surfer", JSON.stringify({ lang, weather, cold }));
+        const ok = await confirmWithQuip(
+            "Ready? Poznań can be weird when it rains."
+        );
+        if (ok) setStage("palmiarnia"); // albo setStage("game"), jeśli tak nazwiesz scenę
+    };
 
     if (stage === "menu") {
         return (
@@ -67,7 +98,7 @@ export function App() {
                         <option value="true">Yes</option>
                     </select>
                 </label>
-                <button onClick={() => setStage("palmiarnia")}>
+                <button onClick={startGame}>
                     Let's go!
                 </button>
             </main>
@@ -77,32 +108,4 @@ export function App() {
     if (stage === "palmiarnia") {
         return <Palmiarnia onBack={() => setStage("menu")} />;
     }
-}
-
-function Palmiarnia({ onBack }: { onBack: () => void }) {
-    const checkLocation = async () => {
-        try {
-            const user = await getUserLocation();
-            const place = { lat: 52.4006, lon: 16.9012 };
-            const close = inRadius(user, place, 100);
-            alert(
-                close
-                    ? "✅ You’re within 100 m of the Palm House!"
-                    : `❌ Too far (${Math.round(
-                          distanceMeters(user, place)
-                      )} m away)`
-            );
-        } catch (err) {
-            alert("⚠️ Location error: " + err);
-        }
-    };
-
-    return (
-        <main class="place">
-            <img src="https://picsum.photos/seed/palmiarnia/400/240" />
-            <h3>Humidity slap, palms everywhere. Nice spot for photos.</h3>
-            <button onClick={checkLocation}>Check location</button>
-            <button onClick={onBack}>Back</button>
-        </main>
-    );
 }
