@@ -1,5 +1,28 @@
 {
     "node.start": "Poznań welcomes you. Pick your first vibe.",
     "go.palmiarnia": "Head to Palm House (warm & green)",
-    "node.palmiarnia.intro": "Humidity slap, palms everywhere. Nice spot for photos."
+    "node.palmiarnia.intro": "Humidity slap, palms everywhere. Nice spot for photos.",
+
+    "menu.title": "Poznań Couchsurfing RPG",
+    "menu.lang": "Language",
+    "menu.weather": "Weather",
+    "menu.cold": "Is it cold for you?",
+    "menu.start": "Start",
+    "menu.resume": "Resume game",
+
+    "weather.sunny": "sunny",
+    "weather.cloudy": "cloudy",
+    "weather.rain": "rain",
+    "weather.snow": "snow",
+
+    "cold.no": "No",
+    "cold.yes": "Yes",
+
+    "quip.start": "Ready? Poznań can be weird when it rains.",
+
+    "place.hours": "Hours",
+    "place.ticket": "Ticket",
+
+    "place.palmiarnia.desc": "Warm, humid, a jungle under glass. Great when it's cold outside.",
+    "place.palmiarnia.howto": "Take a tram to Park Wilsona, then a short walk to the greenhouses."
 }
