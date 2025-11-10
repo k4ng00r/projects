@@ -2,6 +2,7 @@
 import { useState, useEffect } from "preact/hooks";
 import { confirmWithQuip } from "./ui/modal";
 import { Palmiarnia } from "./scenes/Palmiarnia";
+import { t } from "./i18n";
 
 export function App() {
     // wczytaj zapisane preferencje (bez krzyczenia przy złamanym JSON)
@@ -30,12 +31,14 @@ export function App() {
         localStorage.setItem("surfer", JSON.stringify({ lang, weather, cold }));
     }, [lang, weather, cold]);
 
+    const hasSave = !!localStorage.getItem("save");
+
     // 4) handler startu gry — TERAZ używany przez przycisk
     const startGame = async () => {
         // tu już i tak mamy zapisane preferencje przez useEffect, ale nie zaszkodzi nadpisać
         localStorage.setItem("surfer", JSON.stringify({ lang, weather, cold }));
         const ok = await confirmWithQuip(
-            "Ready? Poznań can be weird when it rains."
+            t("quip.start", lang)
         );
         if (ok) setStage("palmiarnia"); // albo setStage("game"), jeśli tak nazwiesz scenę
     };
@@ -43,10 +46,10 @@ export function App() {
     if (stage === "menu") {
         return (
             <main class="menu">
-                <h2>🏙️ Poznań Couchsurfing RPG</h2>
+                <h2>🏙️ {t("menu.title", lang)}</h2>
                 {/* Language */}
                 <label>
-                    Language:
+                    {t("menu.lang", lang)}
                     <select
                         value={lang}
                         onChange={(e) =>
@@ -59,9 +62,15 @@ export function App() {
                             "fr",
                             "it",
                             "es",
-                            "el",
+                            "pl",
                             "cs",
                             "sv",
+                            "no",
+                            "da",
+                            "nl",
+                            "el",
+                            "he",
+                            "uk",
                             "ru",
                             "ar",
                         ].map((l) => (
@@ -72,34 +81,34 @@ export function App() {
 
                 {/* Weather */}
                 <label>
-                    Weather:
+                    {t("menu.weather", lang)}:
                     <select
                         value={weather}
                         onChange={(e) =>
                             setWeather((e.target as HTMLSelectElement).value)
                         }
                     >
-                        <option value="sunny">☀️ sunny</option>
-                        <option value="cloudy">☁️ cloudy</option>
-                        <option value="rain">🌧️ rain</option>
-                        <option value="snow">❄️ snow</option>
+                        <option value="sunny">☀️ {t("weather.sunny", lang)}</option>
+                        <option value="cloudy">☁️ {t("weather.cloudy", lang)}</option>
+                        <option value="rain">🌧️ {t("weather.rain", lang)}</option>
+                        <option value="snow">❄️ {t("weather.snow", lang)}</option>
                     </select>
                 </label>
 
                 <label>
-                    Is it cold for you?
+                    {t("menu.cold", lang)}
                     <select
                         value={String(cold)}
                         onChange={(e) =>
                             setCold(e.currentTarget.value === "true")
                         }
                     >
-                        <option value="false">No</option>
-                        <option value="true">Yes</option>
+                        <option value="false">{t("cold.no", lang)}</option>
+                        <option value="true">{t("cold.yes", lang)}</option>
                     </select>
                 </label>
                 <button onClick={startGame}>
-                    Let's go!
+                    {hasSave ? t("menu.resume", lang) : t("menu.start", lang)}
                 </button>
             </main>
         );
