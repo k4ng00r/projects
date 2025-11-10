@@ -23,4 +23,14 @@ if (import.meta.env.DEV) {
         .catch((e) => console.warn("[dev] i18n import failed", e));
 }
 
+// DEV helper: wystaw engine do window, żeby testować w konsoli
+if (import.meta.env.DEV) {
+    import("./engine")
+        .then((mod) => {
+            (window as any).engine = mod;
+            console.info("[dev] window.engine ready:", Object.keys(mod));
+        })
+        .catch((e) => console.warn("[dev] engine import failed", e));
+}
+
 render(<App />, document.querySelector("#app")!);
