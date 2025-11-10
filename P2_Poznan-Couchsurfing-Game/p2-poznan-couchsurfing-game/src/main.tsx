@@ -33,4 +33,34 @@ if (import.meta.env.DEV) {
         .catch((e) => console.warn("[dev] engine import failed", e));
 }
 
+// DEV helper: wystaw PlaceScene + prosty montaż do podglądu
+if (import.meta.env.DEV) {
+    Promise.all([import("preact"), import("./scenes/PlaceScene.tsx")])
+        .then(([preact, { PlaceScene }]) => {
+            // 1) stary, prosty global — dla wpisywania w konsoli: window.PlaceScene
+            (window as any).PlaceScene = PlaceScene;
+
+            // 2) wygodny helper do montażu
+            (window as any).dev = {
+                PlaceScene,
+                mountPlaceScene(opts: any) {
+                    const mount =
+                        document.getElementById("dev-mount") ||
+                        (() => {
+                            const d = document.createElement("div");
+                            d.id = "dev-mount";
+                            document.body.appendChild(d);
+                            return d;
+                        })();
+                    preact.render(preact.h(PlaceScene, opts), mount);
+                },
+            };
+
+            console.info(
+                "[dev] PlaceScene ready → window.PlaceScene & window.dev.mountPlaceScene()"
+            );
+        })
+        .catch((e) => console.warn("[dev] PlaceScene helper failed", e));
+}
+
 render(<App />, document.querySelector("#app")!);
