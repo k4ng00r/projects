@@ -97,4 +97,70 @@ if (import.meta.env.DEV) {
     })();
 }
 
+// --- DEV: expose JSON content & quick PlaceScene mount for console ---
+if (import.meta.env.DEV) {
+    (async () => {
+        // 1) Loader z możliwością reloadu po zmianach plików
+        async function loadContent() {
+            try {
+                const [{ default: places }, { default: nodes }] =
+                    await Promise.all([
+                        import("../content/places.json"),
+                        import("../content/nodes.json"),
+                    ]);
+                (window as any).content = {
+                    places,
+                    nodes,
+                    reload: loadContent,
+                };
+                console.info("[dev] window.content ready:", {
+                    places: Array.isArray(places) ? places.length : "(object)",
+                    nodes: Array.isArray(nodes) ? nodes.length : "(object)",
+                });
+                return { places, nodes };
+            } catch (e) {
+                console.warn("[dev] content import failed", e);
+                return { places: null, nodes: null };
+            }
+        }
+
+        // 2) Opcjonalny helper do szybkiego podglądu PlaceScene
+        try {
+            const preact = await import("preact");
+            const mod = await import("./scenes/PlaceScene.tsx");
+            const PlaceScene = (mod as any).PlaceScene;
+
+            (window as any).dev = {
+                ...(window as any).dev,
+                loadContent,
+                PlaceScene,
+                mountPlaceScene(opts: any) {
+                    const mount =
+                        document.getElementById("dev-mount") ||
+                        (() => {
+                            const d = document.createElement("div");
+                            d.id = "dev-mount";
+                            document.body.appendChild(d);
+                            return d;
+                        })();
+                    preact.render(preact.h(PlaceScene, opts), mount);
+                },
+            };
+
+            console.info(
+                "[dev] helpers → window.content & window.dev.mountPlaceScene(opts)"
+            );
+        } catch {
+            // PlaceScene może jeszcze nie istnieć i to jest OK
+            (window as any).dev = { ...(window as any).dev, loadContent };
+            console.info(
+                "[dev] helpers → window.content (PlaceScene not found yet)"
+            );
+        }
+
+        // Pierwsze załadowanie danych
+        await loadContent();
+    })();
+}
+
 render(<App />, document.querySelector("#app")!);

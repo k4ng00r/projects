@@ -1,11 +1,50 @@
 [
-    {
-        "id": "palmiarnia",
-        "name": { "en": "Palm House" },
-        "coords": { "lat": 52.4006, "lon": 16.9012 },
-        "hours": "Tue–Sun 9:00–17:00",
-        "ticket": "16–24 PLN",
-        "tags": ["indoor", "warm", "instagram"],
-        "thumbnail": "https://picsum.photos/seed/palmiarnia/400/240"
-    }
+  {
+    "id": "palmiarnia",
+    "name": { "en": "Palm House", "pl": "Palmiarnia Poznańska" },
+    "coords": { "lat": 52.4006, "lon": 16.9012 },
+    "hours": "Tue–Sun 9:00–17:00",
+    "ticket": "16–24 PLN",
+    "thumbnail": "https://picsum.photos/seed/palmiarnia/800/480",
+    "category": "museum",
+    "indoor": true,
+    "warm": true,
+    "tags": ["indoor", "warm", "instagram", "plants", "museum"]
+  },
+  {
+    "id": "brama_poznania",
+    "name": { "en": "Gate of Poznań (ICHOT)", "pl": "Brama Poznania (ICHOT)" },
+    "coords": { "lat": 52.4128, "lon": 16.9515 },
+    "hours": "Tue–Sun 10:00–18:00",
+    "ticket": "20–30 PLN",
+    "thumbnail": "https://picsum.photos/seed/ichot/800/480",
+    "category": "museum",
+    "indoor": true,
+    "warm": false,
+    "tags": ["indoor", "museum", "history", "island"]
+  },
+  {
+    "id": "stary_rynek",
+    "name": { "en": "Old Market Square", "pl": "Stary Rynek" },
+    "coords": { "lat": 52.4083, "lon": 16.9340 },
+    "hours": "Open 24h",
+    "ticket": "Free",
+    "thumbnail": "https://picsum.photos/seed/staryrynek/800/480",
+    "category": "view",
+    "indoor": false,
+    "warm": false,
+    "tags": ["outdoor", "instagram", "oldtown", "view"]
+  },
+  {
+    "id": "park_cytadela",
+    "name": { "en": "Cytadela Park", "pl": "Park Cytadela" },
+    "coords": { "lat": 52.4225, "lon": 16.9305 },
+    "hours": "Open 24h",
+    "ticket": "Free",
+    "thumbnail": "https://picsum.photos/seed/cytadela/800/480",
+    "category": "park",
+    "indoor": false,
+    "warm": false,
+    "tags": ["outdoor", "park", "view", "walks"]
+  }
 ]
