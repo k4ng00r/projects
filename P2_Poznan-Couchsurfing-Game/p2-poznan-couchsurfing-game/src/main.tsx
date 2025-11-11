@@ -63,4 +63,38 @@ if (import.meta.env.DEV) {
         .catch((e) => console.warn("[dev] PlaceScene helper failed", e));
 }
 
+// DEV helpers: expose content & optional PlaceScene for console fiddling
+if (import.meta.env.DEV) {
+    (async () => {
+        try {
+            const [{ default: places }, { default: nodes }] = await Promise.all(
+                [
+                    import("../content/places.json"),
+                    import("../content/nodes.json"),
+                ]
+            );
+            (window as any).content = { places, nodes };
+            console.info("[dev] window.content ready:", {
+                places: Array.isArray(places)
+                    ? places.length
+                    : Object.keys(places || {}).length,
+                nodes: Array.isArray(nodes)
+                    ? nodes.length
+                    : Object.keys(nodes || {}).length,
+            });
+        } catch (e) {
+            console.warn("[dev] content import failed", e);
+        }
+
+        // optional: expose PlaceScene if present
+        try {
+            const mod = await import("./scenes/PlaceScene.tsx");
+            (window as any).PlaceScene = mod.PlaceScene;
+            console.info("[dev] window.PlaceScene ready");
+        } catch {
+            // PlaceScene może jeszcze nie istnieć i to jest ok
+        }
+    })();
+}
+
 render(<App />, document.querySelector("#app")!);
